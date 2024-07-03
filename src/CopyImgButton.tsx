@@ -1,12 +1,25 @@
 import { useEffect, useState } from "react";
 import { CheckIcon, ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 
-type CopyButtonProps = {
+type CopyImgButtonProps = {
     url: string | undefined;
     disabled: boolean;
 };
 
-export default function CopyButton(props: CopyButtonProps) {
+async function copyImageAtUrlToClipboard(imageUrl: string) {
+    try {
+        const imageFetchResponse = await fetch(imageUrl);
+        const imageBlob = await imageFetchResponse.blob();
+        const clipboardItem = new ClipboardItem({ [imageBlob.type]: imageBlob });
+        await navigator.clipboard.write([clipboardItem]);
+        console.log("Image copied to clipboard");
+    } catch (error) {
+        console.error("Failed to copy image to clipboard:", error);
+    }
+}
+
+// noinspection JSUnusedGlobalSymbols
+export default function CopyImgButton(props: CopyImgButtonProps) {
     const [clickedLast, setClickedLast] = useState<boolean>(false);
 
     useEffect(() => {
@@ -20,11 +33,12 @@ export default function CopyButton(props: CopyButtonProps) {
     return (
         <button
             className="h-6 w-6"
-            title={clickedLast ? "Copied!" : "Copy URL"}
+            title={clickedLast ? "Copied!" : "Copy Image"}
             disabled={!props.url}
             onClick={async () => {
                 if (props.url && !clickedLast) {
-                    await navigator.clipboard.writeText(props.url);
+                    await copyImageAtUrlToClipboard(props.url);
+                    // await navigator.clipboard.writeText(props.url);
                     setClickedLast(true);
                 }
             }}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Artwork from "./Artwork.tsx";
 import "./App.css";
@@ -6,50 +6,107 @@ import "./App.css";
 const nbRegex = /(\d+)|steamcommunity\.com\/app\/(\d+)|store\.steampowered\.com\/app\/(\d+)/;
 
 type SteamArtworkURLS = {
-    gameId: number;
-    header: string;
-    logo: string;
-    libraryHero: string;
-    library300x450: string;
-    library600x900: string;
-    pageBgGenerated: string;
-    pageBgGeneratedV6B: string;
+    header: string | undefined;
+    logo: string | undefined;
+    libraryHero: string | undefined;
+    library300x450: string | undefined;
+    library600x900: string | undefined;
+    pageBgGenerated: string | undefined;
+    pageBgGeneratedV6B: string | undefined;
 };
 
+/**
+ * Get a game ID from a Steam link or just a number
+ */
 function matchNumberFromInput(input: string): number | undefined {
     const match = input.match(nbRegex);
     return match ? parseInt(match[1] || match[2] || match[3]) : undefined;
 }
 
-/**
- * Get all the URLs from the input text
- */
-function getAllURLSFromInput(inputTxt: string): SteamArtworkURLS | undefined {
-    const nbMatch = matchNumberFromInput(inputTxt);
-    let baseURL = "";
-
-    if (nbMatch) {
-        baseURL = `https://steamcdn-a.akamaihd.net/steam/apps/${nbMatch}`;
-    } else {
-        return undefined;
-    }
+function getAllURLSFromGameId(gameId: number): SteamArtworkURLS {
+    const baseURL = `https://steamcdn-a.akamaihd.net/steam/apps/${gameId}`;
 
     return {
-        gameId: 12345678,
-        header: baseURL + "/header.jpg",
-        logo: baseURL + "/logo.png",
-        libraryHero: baseURL + "/library_hero.jpg",
-        library300x450: baseURL + "/library_600x900.jpg",
-        library600x900: baseURL + "/library_600x900_2x.jpg",
-        pageBgGenerated: baseURL + "/page_bg_generated.jpg",
-        pageBgGeneratedV6B: baseURL + "/page_bg_generated_v6b.jpg",
+        header: `${baseURL}/header.jpg`,
+        logo: `${baseURL}/logo.png`,
+        libraryHero: `${baseURL}/library_hero.jpg`,
+        library300x450: `${baseURL}/library_300x450.jpg`,
+        library600x900: `${baseURL}/library_600x900.jpg`,
+        pageBgGenerated: `${baseURL}/page_bg_generated.jpg`,
+        pageBgGeneratedV6B: `${baseURL}/page_bg_generated_v6b.jpg`,
     };
+}
+
+async function getAllDataURLSFromGameId(gameId: number): Promise<SteamArtworkURLS> {
+    const baseURL = `https://steamcdn-a.akamaihd.net/steam/apps/${gameId}`;
+
+    const urls = [
+        "/header.jpg",
+        "/logo.png",
+        "/library_hero.jpg",
+        "/library_600x900.jpg",
+        "/library_600x900_2x.jpg",
+        "/page_bg_generated.jpg",
+        "/page_bg_generated_v6b.jpg",
+    ].map((path) => baseURL + path);
+
+    const promises = urls.map((url) =>
+        fetch(url)
+            .then((response) => response.blob())
+            .then((blob) => URL.createObjectURL(blob))
+            .catch((error) => {
+                console.error(`Failed to load image at ${url}`, error);
+                return undefined; // Return null or any error indication as per your logic
+            }),
+    );
+
+    return Promise.all(promises).then((images) => {
+        return {
+            header: images[0],
+            logo: images[1],
+            libraryHero: images[2],
+            library300x450: images[3],
+            library600x900: images[4],
+            pageBgGenerated: images[5],
+            pageBgGeneratedV6B: images[6],
+        };
+    });
+}
+
+function revokeImages(urls: SteamArtworkURLS) {
+    urls?.header && URL.revokeObjectURL(urls.header);
+    urls?.logo && URL.revokeObjectURL(urls.logo);
+    urls?.libraryHero && URL.revokeObjectURL(urls.libraryHero);
+    urls?.library300x450 && URL.revokeObjectURL(urls.library300x450);
+    urls?.library600x900 && URL.revokeObjectURL(urls.library600x900);
+    urls?.pageBgGenerated && URL.revokeObjectURL(urls.pageBgGenerated);
+    urls?.pageBgGeneratedV6B && URL.revokeObjectURL(urls.pageBgGeneratedV6B);
 }
 
 // style={{ backgroundImage: `url(${inputTest})` }}
 
 function App() {
+    const [currentGameId, setCurrentGameId] = useState<number | undefined>(undefined);
     const [currentUrls, setCurrentUrls] = useState<SteamArtworkURLS | undefined>(undefined);
+    const [currentDataUrls, setCurrentDataUrls] = useState<SteamArtworkURLS | undefined>(undefined);
+
+    const [loadingImages, setLoadingImages] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (currentGameId) {
+            setLoadingImages(true);
+            setCurrentUrls(getAllURLSFromGameId(currentGameId));
+            getAllDataURLSFromGameId(currentGameId).then((urls) => {
+                setCurrentDataUrls(urls);
+                setLoadingImages(false);
+            });
+        } else {
+            revokeImages(currentDataUrls as SteamArtworkURLS);
+            setCurrentUrls(undefined);
+            setCurrentDataUrls(undefined);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentGameId]);
 
     return (
         <div className="flex items-center justify-center">
@@ -61,9 +118,11 @@ function App() {
                         e.preventDefault();
                         const input_text = (document.getElementById("input_text") as HTMLInputElement).value;
 
-                        const urls = getAllURLSFromInput(input_text);
-                        if (urls) {
-                            setCurrentUrls(urls);
+                        const nb = matchNumberFromInput(input_text);
+                        if (nb) {
+                            setCurrentGameId(nb);
+                        } else {
+                            setCurrentGameId(undefined);
                         }
                     }}
                 >
@@ -80,45 +139,59 @@ function App() {
                 <div className="flex flex-col gap-4 p-2">
                     <Artwork
                         title={"Header"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.header}
-                        fileName={`${currentUrls?.gameId}_header.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.header}
+                        realUrl={currentUrls?.header}
+                        fileName={`${currentGameId}_header.jpg`}
+                        loading={loadingImages}
                     />
                     <Artwork
                         title={"Logo"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.logo}
-                        fileName={`${currentUrls?.gameId}_logo.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.logo}
+                        realUrl={currentUrls?.logo}
+                        fileName={`${currentGameId}_logo.png`}
+                        loading={loadingImages}
                     />
                     <Artwork
                         title={"Library Hero"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.libraryHero}
-                        fileName={`${currentUrls?.gameId}_library_hero.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.libraryHero}
+                        realUrl={currentUrls?.libraryHero}
+                        fileName={`${currentGameId}_library_hero.jpg`}
+                        loading={loadingImages}
                     />
                     <Artwork
                         title={"Library 300x450"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.library300x450}
-                        fileName={`${currentUrls?.gameId}_library_300x450.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.library300x450}
+                        realUrl={currentUrls?.library300x450}
+                        fileName={`${currentGameId}_library_300x450.jpg`}
+                        loading={loadingImages}
                     />
                     <Artwork
                         title={"Library 600x900"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.library600x900}
-                        fileName={`${currentUrls?.gameId}_library_600x900.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.library600x900}
+                        realUrl={currentUrls?.library600x900}
+                        fileName={`${currentGameId}_library_600x900.jpg`}
+                        loading={loadingImages}
                     />
                     <Artwork
                         title={"Page Background Generated"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.pageBgGenerated}
-                        fileName={`${currentUrls?.gameId}_page_background.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.pageBgGenerated}
+                        realUrl={currentUrls?.pageBgGenerated}
+                        fileName={`${currentGameId}_page_background.jpg`}
+                        loading={loadingImages}
                     />
                     <Artwork
                         title={"Page Background Generated V6B"}
-                        gameId={currentUrls?.gameId}
-                        url={currentUrls?.pageBgGeneratedV6B}
-                        fileName={`${currentUrls?.gameId}_page_background_v6b.jpg`}
+                        gameId={currentGameId}
+                        dataUrl={currentDataUrls?.pageBgGeneratedV6B}
+                        realUrl={currentUrls?.pageBgGeneratedV6B}
+                        fileName={`${currentGameId}_page_background_v6b.jpg`}
+                        loading={loadingImages}
                     />
                 </div>
             </div>
