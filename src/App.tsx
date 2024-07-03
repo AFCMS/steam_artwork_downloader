@@ -49,7 +49,6 @@ function getAllURLSFromInput(inputTxt: string): SteamArtworkURLS | undefined {
 // style={{ backgroundImage: `url(${inputTest})` }}
 
 function App() {
-    const [inputTest, setInputTest] = useState<string>("");
     const [currentUrls, setCurrentUrls] = useState<SteamArtworkURLS | undefined>(undefined);
 
     return (
@@ -64,7 +63,6 @@ function App() {
 
                         const urls = getAllURLSFromInput(input_text);
                         if (urls) {
-                            setInputTest(urls?.library600x900);
                             setCurrentUrls(urls);
                         }
                     }}
