@@ -1,4 +1,5 @@
 ---
+name: CI
 on:
   push:
   pull_request:
@@ -14,6 +15,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+
+      - name: Enable PNPM
+        run: corepack enable pnpm
 
       - name: Install dependencies
         run: pnpm install
