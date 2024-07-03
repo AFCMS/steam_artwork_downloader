@@ -1,0 +1,29 @@
+.main-box {
+    @apply container m-4 flex flex-col overflow-hidden rounded-xl bg-blue-900 p-4;
+}
+
+.main-box::before {
+    @apply absolute bottom-0 left-0 right-0 top-0 -z-10 bg-cover opacity-50;
+}
+
+input[type="text"] {
+    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
+}
+
+button {
+    @apply block w-full rounded-md border-gray-300 bg-cyan-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
+}
+
+h1 {
+    @apply select-none;
+}
+
+.glass-effect {
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.33);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
