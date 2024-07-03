@@ -12,7 +12,7 @@ type ArtworkProps = {
 
 export default function Artwork(props: ArtworkProps) {
     return (
-        <div className="rounded bg-gray-500 p-4">
+        <div className="rounded-md bg-gray-300 p-4">
             <div className={"mb-2 flex flex-row items-center"}>
                 <h2 className={"w-full font-bold"}>{props.title}</h2>
 
