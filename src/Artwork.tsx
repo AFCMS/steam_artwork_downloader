@@ -39,12 +39,12 @@ export default function Artwork(props: ArtworkProps) {
             </div>
             {!props.loading ? (
                 props.dataUrl ? (
-                    <img alt="Header" src={props.dataUrl} />
+                    <img alt="Header" src={props.dataUrl} className="pt-2" />
                 ) : (
                     <span>Not Found</span>
                 )
             ) : (
-                <span>LOADING</span>
+                <span>Loading...</span>
             )}
         </div>
     );
