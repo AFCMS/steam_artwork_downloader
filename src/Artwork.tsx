@@ -12,13 +12,13 @@ type ArtworkProps = {
 
 export default function Artwork(props: ArtworkProps) {
     return (
-        <div className="rounded-md bg-gray-300 p-4">
+        <div className="rounded-md bg-slate-300 p-4 drop-shadow-md">
             <div className={"mb-2 flex flex-row items-center"}>
                 <h2 className={"w-full font-bold"}>{props.title}</h2>
 
                 <div className={"end-0 flex flex-row gap-2"}>
                     <a
-                        className="h-6 w-6"
+                        className="btn-link flex h-8 w-8 items-center justify-center"
                         title="Download"
                         target={"_blank"}
                         href={!props.loading ? props.dataUrl : undefined}
@@ -27,7 +27,7 @@ export default function Artwork(props: ArtworkProps) {
                         <ArrowDownTrayIcon className={"h-6"} />
                     </a>
                     <a
-                        className="h-6 w-6"
+                        className="btn-link flex h-8 w-8 items-center justify-center"
                         title="Open"
                         target={"_blank"}
                         href={!props.loading ? props.dataUrl : undefined}

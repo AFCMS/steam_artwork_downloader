@@ -1,17 +1,13 @@
 .main-box {
-    @apply container m-4 flex flex-col overflow-hidden rounded-xl bg-blue-900 p-4;
-}
-
-.main-box::before {
-    @apply absolute bottom-0 left-0 right-0 top-0 -z-10 bg-cover opacity-50;
+    @apply container m-4 flex flex-col overflow-hidden rounded-xl bg-slate-200 p-4 drop-shadow-md;
 }
 
 input[type="text"] {
-    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
+    @apply block w-full rounded-md border-slate-300 shadow-sm ring-0;
 }
 
-button {
-    @apply block w-full rounded-md border-gray-300 bg-cyan-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
+.btn-link {
+    @apply block w-full rounded-md bg-slate-400 shadow-sm hover:bg-slate-400/50;
 }
 
 h1,

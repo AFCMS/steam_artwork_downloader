@@ -110,7 +110,7 @@ function App() {
 
     return (
         <div className="flex items-center justify-center">
-            <div className="main-box glass-effect">
+            <div className="main-box">
                 <div className="flex flex-row items-center">
                     <h1 className="w-full p-2 font-bold">Steam Artwork Downloader</h1>
                     <a className="end-0 pr-2" href="https://github.com/AFCMS/steam_artwork_downloader">
@@ -142,10 +142,15 @@ function App() {
                 >
                     <div className="w-full">
                         <label htmlFor="input_text"></label>
-                        <input type="text" name="input_text" id="input_text" placeholder="ex: 12345678" />
+                        <input
+                            type="text"
+                            name="input_text"
+                            id="input_text"
+                            placeholder="ex: 12345678, https://store.steampowered.com/app/12345678/App_Name"
+                        />
                     </div>
 
-                    <button type="submit" className="w-36">
+                    <button type="submit" className="btn-link w-36">
                         Get Artworks
                     </button>
                 </form>

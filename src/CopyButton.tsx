@@ -19,7 +19,7 @@ export default function CopyButton(props: CopyButtonProps) {
 
     return (
         <button
-            className="h-6 w-6"
+            className="btn-link flex h-8 w-8 items-center justify-center"
             title={clickedLast ? "Copied!" : "Copy URL"}
             disabled={!props.url}
             onClick={async () => {
