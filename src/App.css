@@ -14,7 +14,9 @@ button {
     @apply block w-full rounded-md border-gray-300 bg-cyan-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50;
 }
 
-h1 {
+h1,
+h2,
+h3 {
     @apply select-none;
 }
 
