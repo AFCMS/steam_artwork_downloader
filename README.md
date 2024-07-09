@@ -4,6 +4,14 @@
 
 This project allows you to download Steam artwork images from the Steam CDN for any Steam game.
 
+Built with:
+
+-   [Vite](https://vitejs.dev)
+-   [React](https://react.dev)
+-   [Tailwind CSS](https://tailwindcss.com)
+-   [Vercel](https://vercel.com)
+-   [Vercel Analytics](https://github.com/vercel/analytics)
+
 ## Usage
 
 ```shell
