@@ -51,7 +51,7 @@ async function getAllDataURLSFromGameId(gameId: number): Promise<SteamArtworkURL
     ].map((path) => baseURL + path);
 
     const promises = urls.map((url) =>
-        fetch(url)
+        fetch(url, { cache: "reload" })
             .then((response) => response.blob())
             .then((blob) => URL.createObjectURL(blob))
             .catch((error) => {
