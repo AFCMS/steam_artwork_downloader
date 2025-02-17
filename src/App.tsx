@@ -30,8 +30,8 @@ function getAllURLSFromGameId(gameId: number): SteamArtworkURLS {
         header: `${baseURL}/header.jpg`,
         logo: `${baseURL}/logo.png`,
         libraryHero: `${baseURL}/library_hero.jpg`,
-        library300x450: `${baseURL}/library_300x450.jpg`,
-        library600x900: `${baseURL}/library_600x900.jpg`,
+        library300x450: `${baseURL}/library_600x900.jpg`,
+        library600x900: `${baseURL}/library_600x900_2x.jpg`,
         pageBgGenerated: `${baseURL}/page_bg_generated.jpg`,
         pageBgGeneratedV6B: `${baseURL}/page_bg_generated_v6b.jpg`,
     };
